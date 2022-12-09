@@ -41,6 +41,11 @@ spec:
                 secretKeyRef:
                   key: AWS_SECRET_ACCESS_KEY
                   name: mastodon-secrets
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: SMTP_PASSWORD
+                  name: mastodon-secrets
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
@@ -206,6 +211,11 @@ spec:
                 configMapKeyRef:
                   key: WEB_DOMAIN
                   name: env-production
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: SMTP_PASSWORD
+                  name: mastodon-secrets
           image: tootsuite/mastodon:v4.0.2
           livenessProbe:
             httpGet:

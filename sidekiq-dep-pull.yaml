@@ -51,6 +51,11 @@ spec:
                 secretKeyRef:
                   key: AWS_SECRET_ACCESS_KEY
                   name: mastodon-secrets
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: SMTP_PASSWORD
+                  name: mastodon-secrets
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
