@@ -1,0 +1,227 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.27.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: web
+  name: web
+  namespace: mastodon
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.kompose.service: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.27.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/external-network: "true"
+        io.kompose.network/internal-network: "true"
+        io.kompose.service: web
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              io.kompose.service: web    
+      containers:
+        - args:
+            - bash
+            - -c
+            - rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_ACCESS_KEY_ID
+                  name: mastodon-secrets
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: AWS_SECRET_ACCESS_KEY
+                  name: mastodon-secrets
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASS
+                  name: mastodon-secrets
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  key: SECRET_KEY_BASE
+                  name: mastodon-secrets
+            - name: VAPID_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: VAPID_PRIVATE_KEY
+                  name: mastodon-secrets
+            - name: VAPID_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: VAPID_PUBLIC_KEY
+                  name: mastodon-secrets
+            - name: OTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: OTP_SECRET
+                  name: mastodon-secrets
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_HOST
+                  name: env-production
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: env-production
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PORT
+                  name: env-production
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USER
+                  name: env-production
+            - name: ES_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: ES_ENABLED
+                  name: env-production
+            - name: ES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: ES_HOST
+                  name: env-production
+            - name: ES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: ES_PORT
+                  name: env-production
+            - name: LOCAL_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  key: LOCAL_DOMAIN
+                  name: env-production
+            - name: MAX_THREADS
+              valueFrom:
+                configMapKeyRef:
+                  key: MAX_THREADS
+                  name: env-production
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_HOST
+                  name: env-production
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_PASSWORD
+                  name: env-production
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_PORT
+                  name: env-production
+            - name: S3_ALIAS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_ALIAS_HOST
+                  name: env-production
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_BUCKET
+                  name: env-production
+            - name: S3_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_ENABLED
+                  name: env-production
+            - name: S3_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_ENDPOINT
+                  name: env-production
+            - name: S3_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_HOSTNAME
+                  name: env-production
+            - name: S3_PROTOCOL
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_PROTOCOL
+                  name: env-production
+            - name: S3_REGION
+              valueFrom:
+                configMapKeyRef:
+                  key: S3_REGION
+                  name: env-production
+            - name: SINGLE_USER_MODE
+              valueFrom:
+                configMapKeyRef:
+                  key: SINGLE_USER_MODE
+                  name: env-production
+            - name: SMTP_AUTH_METHOD
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_AUTH_METHOD
+                  name: env-production
+            - name: SMTP_ENABLE_STARTTLS
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_ENABLE_STARTTLS
+                  name: env-production
+            - name: SMTP_FROM_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_FROM_ADDRESS
+                  name: env-production
+            - name: SMTP_LOGIN
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_LOGIN
+                  name: env-production
+            - name: SMTP_OPENSSL_VERIFY_MODE
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_OPENSSL_VERIFY_MODE
+                  name: env-production
+            - name: SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_PORT
+                  name: env-production
+            - name: SMTP_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  key: SMTP_SERVER
+                  name: env-production
+            - name: WEB_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  key: WEB_DOMAIN
+                  name: env-production
+          image: tootsuite/mastodon:v4.0.2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+          name: web
+          ports:
+            - containerPort: 3000
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+  DB_HOST: 192.168.1.20
+  DB_NAME: mastodon_production
+  DB_PORT: "5432"
+  DB_USER: mastodon
+  ES_ENABLED: "true"
+  ES_HOST: 192.168.1.21
+  ES_PORT: "9200"
+  LOCAL_DOMAIN: mydomain.com
+  MAX_THREADS: "15"
+  MAX_CONCURRENCY: "6"
+  REDIS_HOST: 192.168.1.22
+  REDIS_PASSWORD: ""
+  REDIS_PORT: "6379"
+  S3_ALIAS_HOST: mys3.com
+  S3_BUCKET: mastodon_bucket
+  S3_ENABLED: "true"
+  S3_ENDPOINT: https://mys3-endpoint.com
+  S3_HOSTNAME: mys3-endpoint.com
+  S3_PROTOCOL: https
+  S3_REGION: oslo
+  SINGLE_USER_MODE: "false"
+  SMTP_AUTH_METHOD: plain
+  SMTP_ENABLE_STARTTLS: auto
+  SMTP_FROM_ADDRESS: Mastodon <notifications@mydomain.com>
+  SMTP_LOGIN: mastodon@mydomain.com
+  SMTP_OPENSSL_VERIFY_MODE: none
+  SMTP_PORT: "587"
+  SMTP_SERVER: mail.mydomain.com
+  WEB_DOMAIN: mydomain.com
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sidekiq-env-production
+  name: env-production
+  namespace: mastodon

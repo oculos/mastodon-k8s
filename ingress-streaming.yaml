@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: streaming
+  namespace: mastodon
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+    nginx.ingress.location-snippets: | 
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Proxy "";
+      proxy_buffering off;
+      proxy_redirect off;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
+      add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
+      tcp_nodelay on;
+  labels: 
+     app: streaming
+     service: streaming
+spec:
+    rules:
+    - host: mydomain.com
+      http:
+        paths:
+        - path: /api/v1/streaming
+          pathType: Prefix
+          backend:
+            service:
+              name: streaming
+              port:
+                number: 4000 
